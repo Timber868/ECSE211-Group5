@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-from utils.brick import EV3ColorSensor, wait_ready_sensors, TouchSensor, Motor
+from subsystems.utils.brick import EV3ColorSensor, wait_ready_sensors, TouchSensor, Motor
 from ast import literal_eval
 import time
-from collect_color_sensor_data import collect_color_sensor_data
+from subsystems.collect_color_sensor_data import collect_color_sensor_data
 from math import sqrt
-from motor_arm_settings import get_arm_state
+from subsystems.motor_arm_settings import get_arm_state
 
 # INITIALIZING OBJECTS
 
@@ -30,10 +30,6 @@ left_color_array =[]
 right_color_array=[]
 
 def get_normalized_RGB_from_csv(i):
-    red_measured, green_measured, blue_measured
-    red_measured_avg, green_measured_avg, blue_measured_avg
-    left_color_array, right_color_array
-
     a_array = []
     if i == "left":
         a_array = left_color_array
@@ -45,7 +41,7 @@ def get_normalized_RGB_from_csv(i):
     n_lines = 0                                                 # track number of lines (measurements) to compute mean
     collect_color_sensor_data(left_color_array,right_color_array)
     for colors in a_array:
-        r, g, b = literal_eval(colors)  # convert string to 3 floats
+        r, g, b = colors  # convert string to 3 floats
         if r != None and g != None and b != None:
             red_measured += r
             green_measured += g
@@ -56,17 +52,23 @@ def get_normalized_RGB_from_csv(i):
         green_measured_avg = green_measured / n_lines
         blue_measured_avg = blue_measured / n_lines 
 
+        print(f"red_measured_avg: {red_measured_avg}, green_measured_avg: {green_measured_avg}, blue_measured_avg: {blue_measured_avg}")
         denominator = red_measured_avg + green_measured_avg + blue_measured_avg
         
-        red_measured = red_measured_avg / denominator
-        green_measured = green_measured_avg / denominator
-        blue_measured = blue_measured_avg / denominator
+        if denominator != 0:
+            red_measured = red_measured_avg / denominator
+            green_measured = green_measured_avg / denominator
+            blue_measured = blue_measured_avg / denominator
+        else:
+            red_measured = 0
+            green_measured = 0
+            blue_measured = 0
 
     return(red_measured, green_measured, blue_measured, red_measured_avg, green_measured_avg, blue_measured_avg)
 
 match_colors = {}                                               # initializing the colors dict for color matching
 def color_matching(i):
-    DETECTED_COLOR
+    DETECTED_COLOR = None
 
     r_measured, g_measured, b_measured, r_avg, g_avg, b_avg =  get_normalized_RGB_from_csv(i)
 
@@ -108,7 +110,8 @@ def color_matching(i):
 
 def get_left_sensor_color():
     DETECTED_COLOR = None
-    while DETECTED_COLOR == None:
+    i = 0
+    while DETECTED_COLOR == None and i < 5:
         print("BEFORE COLLECTING DATA")
         collect_color_sensor_data(left_color_array,right_color_array)
         print("COLLECTED COLOR DATA")
@@ -116,9 +119,10 @@ def get_left_sensor_color():
 
         if DETECTED_COLOR is not None:
             print(f"DETECTED_COLOR: {DETECTED_COLOR}")
-            DETECTED_COLOR = None
-
-            time.sleep(0.1) 
+            return DETECTED_COLOR
+        
+        time.sleep(0.1) # wait for the color sensor to detect the color
+        i += 1 # increment the counter
 
 
 if __name__ == "__main__": 
