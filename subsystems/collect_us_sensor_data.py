@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
-from utils import sound
-from utils.brick import EV3ColorSensor, EV3UltrasonicSensor, wait_ready_sensors, reset_brick
+from subsystems.utils.brick import EV3ColorSensor, EV3UltrasonicSensor, wait_ready_sensors, reset_brick
+from subsystems.motor_settings import *
+from subsystems.collect_color_sensor_data import collect_color_sensor_data
 from time import sleep
-from motor_settings import *
-from collect_color_sensor_data import collect_color_sensor_data
 from math import sqrt
 import threading
 
@@ -68,11 +67,3 @@ def detect_block_and_move():
         return True
     
     return False
-
-def detect_water():
-    
-        
-if __name__ == "__main__":
-    detect_block_and_move()
-    
-

@@ -1,5 +1,6 @@
 from utils.brick import Motor, EV3GyroSensor, wait_ready_sensors
 from motor_settings import *
+import threading
 
 def avoid_block():
     gyro = EV3GyroSensor(1)

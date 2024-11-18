@@ -6,7 +6,7 @@ It must be run on the robot.
 """
 
 # Add your imports here, if any
-from utils.brick import EV3ColorSensor, wait_ready_sensors, TouchSensor
+from subsystems.utils.brick import EV3ColorSensor, wait_ready_sensors, TouchSensor
 from time import sleep
 
 COLOR_SENSOR_DATA_FILE = "../data_analysis/color_sensorGREEN.csv"

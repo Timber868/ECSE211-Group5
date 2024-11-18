@@ -1,16 +1,16 @@
-from utils.brick import Motor, EV3GyroSensor, wait_ready_sensors
-from motor_arm_settings import *
+from subsystems.utils import brick
+from subsystems.motor_arm_settings import open_catcher, close_catcher, stop_sensor_arm, rotate_sensor_arm, rotate_initial_position_arm, arm_limits
 import time
 
 # orientation
-motor_left = Motor("C")
-motor_right = Motor("B")
+motor_left = brick.Motor("C")
+motor_right = brick.Motor("B")
 
 # connect GyroSensor to port S1
-gyro = EV3GyroSensor(1)
+gyro = brick.EV3GyroSensor(1)
 
 # waits until every previously defined sensor is ready
-wait_ready_sensors()
+brick.wait_ready_sensors()
 
 gyro.set_mode('abs')
 

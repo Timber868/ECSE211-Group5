@@ -1,5 +1,5 @@
-from utils.brick import wait_ready_sensors, TouchSensor, Motor
-from utils.sound import Sound
+from subsystems.utils.brick import wait_ready_sensors, TouchSensor, Motor
+from subsystems.utils.sound import Sound
 from time import sleep
 from threading import Thread
 
