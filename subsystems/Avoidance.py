@@ -1,5 +1,5 @@
 from subsystems.utils.brick import Motor, EV3GyroSensor, EV3ColorSensor, wait_ready_sensors
-from subsystems.motor_settings import *
+from subsystems.motor_settings import rotate, rotate_right, wheel_position
 import threading
 import time
 

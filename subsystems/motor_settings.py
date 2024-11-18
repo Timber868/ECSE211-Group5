@@ -1,5 +1,5 @@
 from subsystems.utils import brick
-from subsystems.motor_arm_settings import open_catcher, close_catcher, stop_sensor_arm, rotate_sensor_arm, rotate_initial_position_arm, arm_limits
+from subsystems.motor_arm_settings import close_catcher, stop_sensor_arm, rotate_sensor_arm, rotate_initial_position_arm, arm_limits
 import time
 
 # orientation
@@ -107,20 +107,4 @@ if __name__ == "__main__":
     
     #wheel_position(-600,-600,4)
     rotate(90, 0.002)
-# #     
-# #     stop_catcher()
-# 
-# #     power(0,0)
-#     rotate_sensor_arm()
-#     rotate_initial_position_arm()
-#     stop_sensor_arm()
-#     
-#     wheel_position(-640,-640,4)
-#     rotate(170)
-#     open_catcher()  
-#     wheel_position(-350,-350,1)
-#     close_catcher()
-#     
-#     
-# #     t_move()
-#     rotate("left")
+
