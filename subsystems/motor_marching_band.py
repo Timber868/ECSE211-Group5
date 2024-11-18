@@ -1,4 +1,4 @@
-from utils.brick import Motor
+from subsystems.utils.brick import Motor
 from time import *
 motor = Motor("A")
 n = 0
