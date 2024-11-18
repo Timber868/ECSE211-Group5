@@ -1,5 +1,5 @@
 from subsystems.utils import brick
-from subsystems.motor_arm_settings import close_catcher, stop_sensor_arm, rotate_sensor_arm, rotate_initial_position_arm, arm_limits
+from subsystems.motor_arm_settings import stop_sensor_arm, rotate_sensor_arm, rotate_initial_position_arm, arm_limits
 import time
 
 # orientation
