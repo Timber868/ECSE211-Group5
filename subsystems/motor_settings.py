@@ -33,8 +33,13 @@ def speed(speed1, speed2):
     motor_right.set_dps(speed2) # 90 deg/sec
 
 def wheel_position(p1,p2,wait):
-    motor_left.set_position_relative(p1)
-    motor_right.set_position_relative(p2)
+    wheel_circumference = 12.56637
+    tick = wheel_circumference / 360
+    
+    distance_p1 = p1 / tick
+    distance_p2 = p2 / tick
+    motor_left.set_position_relative(distance_p1)
+    motor_right.set_position_relative(distance_p2)
     # get motor speed here time.sleep(p1/motor_speed)
     time.sleep(wait)
     
@@ -51,7 +56,7 @@ def rotate(angle, speed):  # speed: 0.01 = very fast, 0.25 = very slow
     new_angle = (result - angle)
     
     while(result > new_angle):
-        wheel_position(-40,40,speed)
+        wheel_position(-1.4,1.4,speed)
         current = gyro.get_abs_measure()
         
         # current == result
@@ -76,7 +81,7 @@ def rotate_right(angle, speed):  # speed: 0.01 = very fast, 0.25 = very slow
     print(new_angle)
     
     while(result < new_angle):
-        wheel_position(40,-40,speed)
+        wheel_position(1.4,-1.4,speed)
         current = gyro.get_abs_measure()
         
         # current == result
@@ -90,11 +95,7 @@ def wheel_limits(p1,d1,p2,d2):
     motor_right.set_limits(power=p2, dps=d2)
     
 def catch_poop():
-    wheel_position(-600,-600,4)
-    rotate(170)
-    open_catcher()  
-    wheel_position(-350,-350,1)
-    close_catcher()
+    wheel_position(10,10,3)
 
 if __name__ == "__main__":
     # Prevents position control from going over either:
