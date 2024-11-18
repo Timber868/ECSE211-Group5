@@ -96,30 +96,3 @@ def catch_poop():
     wheel_position(-350,-350,1)
     close_catcher()
 
-if __name__ == "__main__":
-    # Prevents position control from going over either:
-    # 50% power or 90 deg/sec, whichever is slower
-    #wheels_reset()
-    #arms_reset()
-    wheel_limits(100,180,100,180)
-    arm_limits(70,90,70,90)
-    
-    #wheel_position(-600,-600,4)
-    rotate(90, 0.002)
-# #     
-# #     stop_catcher()
-# 
-# #     power(0,0)
-#     rotate_sensor_arm()
-#     rotate_initial_position_arm()
-#     stop_sensor_arm()
-#     
-#     wheel_position(-640,-640,4)
-#     rotate(170)
-#     open_catcher()  
-#     wheel_position(-350,-350,1)
-#     close_catcher()
-#     
-#     
-# #     t_move()
-#     rotate("left")
