@@ -96,3 +96,8 @@ def catch_poop():
     wheel_position(-350,-350,1)
     close_catcher()
 
+def move_forward(dist, speed):
+    wheel_position(dist, dist, speed)
+
+def move_backward(dist, speed):
+    wheel_position(-dist, -dist, speed)
