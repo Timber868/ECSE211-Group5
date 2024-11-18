@@ -10,10 +10,10 @@ def detect_color():
     COLOR_SENSOR_RIGHT = EV3ColorSensor(2)
 
     while not stop_event.is_set():
-        color_left = COLOR_SENSOR_LEFT.get_color()
-        color_right = COLOR_SENSOR_RIGHT.get_color()
+#         color_left = COLOR_SENSOR_LEFT.get_color()
+#         color_right = COLOR_SENSOR_RIGHT.get_color()
 
-        if color_left == "BLUE" or color_right == "BLUE":
+        if "grey" == "BLUE" or "black" == "BLUE":
             print("Blue color detected!")
             stop_event.set()  # Signal to stop the thread
             return
@@ -27,7 +27,7 @@ def avoid_block_left():
     
     #back up 5cm
     print("initial backup")
-    wheel_position(-600,-600,2)
+    wheel_position(-200,-200,2)
     time.sleep(0.2)
     
     #turn 90 degrees
@@ -80,7 +80,7 @@ def avoid_block_left():
     
     #move forward 20cm
     print("second forwards")
-    wheel_position(1000,1000,1)
+    wheel_position(600,600,1)
     time.sleep(0.2)
 
     if stop_event.is_set():
@@ -92,38 +92,9 @@ def avoid_block_left():
         avoid_block_right()
         return
     
-    #turn 90 degrees
-    print("third rotate")
-    rotate_right(90,0.05)
-    time.sleep(0.2)
-
-    if stop_event.is_set():
-        print("Blue color detected!")
-
-        #If blue is detected, retrace back to our initial avoidance position
-        retrace_step_5()
-
-        avoid_block_right()
-        return
     
-    #move forward 10cm
-    print("third forward")
-    wheel_position(200,200,1)
-    time.sleep(0.2)
 
-    if stop_event.is_set():
-        print("Blue color detected!")
-
-        #If blue is detected, retrace back to our initial avoidance position
-        retrace_step_6()
-
-        avoid_block_right()
-        return
     
-    #turn back to initial position
-    print("last rotate")
-    rotate(90,0.05)
-    time.sleep(0.2)
 
     #Finish the thread
     thread.join()
