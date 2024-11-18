@@ -3,7 +3,7 @@
 # Test for gyro senor
 
 
-from utils.brick import EV3GyroSensor, wait_ready_sensors
+from brick import EV3GyroSensor, wait_ready_sensors
 import time
 
 # connect GyroSensor to port S1

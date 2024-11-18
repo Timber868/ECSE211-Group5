@@ -11,7 +11,7 @@ January 25th, 2022
 ### Touch Sensor ###
 ####################
 
-from utils.brick import wait_ready_sensors, TouchSensor
+from brick import wait_ready_sensors, TouchSensor
 
 touch = TouchSensor(1)
 
@@ -24,7 +24,7 @@ touch.is_pressed()    # => False or True
 ### EV3 Ultrasonic Sensor ###
 #############################
 
-from utils.brick import wait_ready_sensors, EV3UltrasonicSensor
+from brick import wait_ready_sensors, EV3UltrasonicSensor
 
 ultra = EV3UltrasonicSensor(2)
 
@@ -41,7 +41,7 @@ ultra.get_inches() # no mode switch, it's unnecessary
 ### EV3 Color Sensor ###
 ########################
 
-from utils.brick import wait_ready_sensors, EV3ColorSensor
+from brick import wait_ready_sensors, EV3ColorSensor
 
 color = EV3ColorSensor(3)
 
@@ -58,7 +58,7 @@ color.get_raw_value() # => raw rgb value, includes "unknown 4th value"
 ### EV3 Gyro Sensor ###
 #######################
 
-from utils.brick import wait_ready_sensors, EV3GyroSensor
+from brick import wait_ready_sensors, EV3GyroSensor
 
 gyro = EV3GyroSensor(4)
 

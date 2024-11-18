@@ -1,4 +1,4 @@
-from utils.brick import Motor
+from brick import Motor
 import time
 other_motor = Motor("C")
 
@@ -20,7 +20,7 @@ motor.set_dps(-720) # Backwards 720 deg/sec
 # OR
 motor.set_dps(0)    # Stops motor. Motor cannot rotate.
 
-from utils.brick import Motor
+from brick import Motor
 import time
 other_motor = Motor("C")
 
