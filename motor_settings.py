@@ -50,19 +50,38 @@ def rotate(angle, speed):  # speed: 0.01 = very fast, 0.25 = very slow
         result = gyro.get_abs_measure()
     new_angle = (result - angle)
     
-    print(f"result: {result}")
-    print("\n\n")
-    print(f"new angle: {new_angle}")
-    print("\n\n")
     while(result > new_angle):
         wheel_position(-40,40,speed)
         current = gyro.get_abs_measure()
         
         # current == result
         while(current is None or current == 0):
-            print(1)
             current = gyro.get_abs_measure()
-        print(f"current: {current}")
+        result = current
+        time.sleep(0.1)
+
+def rotate_right(angle, speed):  # speed: 0.01 = very fast, 0.25 = very slow
+    #angle = -1*angle
+    #if (angle < 0):
+    #    angle = angle + 360
+    gyro.reset_measure()
+    #time.sleep(0.1)
+    new_angle = 0
+    result = gyro.get_abs_measure()
+    while(result is None):
+        result = gyro.get_abs_measure()
+    new_angle = (result + angle)
+    
+    print(result)
+    print(new_angle)
+    
+    while(result < new_angle):
+        wheel_position(40,-40,speed)
+        current = gyro.get_abs_measure()
+        
+        # current == result
+        while(current is None or current == 0):
+            current = gyro.get_abs_measure()
         result = current
         time.sleep(0.1)
     
