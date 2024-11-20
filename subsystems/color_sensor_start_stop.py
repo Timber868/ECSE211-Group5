@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
+# This script is for color detection. It will collect the data from both color sensors
+# And return the result in a String tuple.
+# def: get_both_sensor_color() -> ("red","water")
+# Color set: red, yellow, orange, green, water, ground, nothing.
+# @anthor: Zhengxuan Zhao
+
 from utils.brick import EV3ColorSensor, wait_ready_sensors, TouchSensor, Motor
-from ast import literal_eval
-import time
-from collect_color_sensor_data import collect_color_sensor_data
-from math import sqrt
+from time import sleep
 
 # INITIALIZING OBJECTS
 
@@ -16,15 +19,35 @@ wait_ready_sensors(True) # Input True to see what the robot is trying to initial
 
 # START OF PROGRAM
 
-red_measured, green_measured, blue_measured = 0, 0, 0           # initializing the measured colors' values\
-left_color_array =[]
-right_color_array=[]
+red_measured, green_measured, blue_measured = 0, 0, 0 # initializing the measured colors' values\
+left_color_array =[] # initializing the data for left color sensor
+right_color_array=[] # initializing the data for right color sensor
+
+def collect_color_sensor_data(left_color_array, right_color_array):
+    "Collect color sensor data."
+    try:
+        i = 0
+        while i<4: # just the i here to make faster data collection
+                left_colors = COLOR_SENSOR_LEFT.get_rgb()
+                right_colors = COLOR_SENSOR_RIGHT.get_rgb()
+   
+                if (left_colors != [None, None, None]):
+                    #print(f"left color added : {left_colors}" )
+                    left_color_array.append(left_colors)
+                if (right_colors != [None, None, None]):
+                    # print(f"right color added : {right_colors}" )
+                    right_color_array.append(right_colors)
+                sleep(0.01)
+                i = i + 1
+        
+    except BaseException:  # capture all exceptions including KeyboardInterrupt (Ctrl-C)
+        pass
 
 def get_average_RGB_from_csv(i):
         
-    red_measured, green_measured, blue_measured = 0, 0, 0      # reset (because of infinite while loop)
+    red_measured, green_measured, blue_measured = 0, 0, 0 # reset (because of infinite while loop)
 
-    n_lines = 0                                                 # track number of lines (measurements) to compute mean
+    n_lines = 0  # track number of lines (measurements) to compute mean
     collect_color_sensor_data(left_color_array,right_color_array)
 
     a_array = []
@@ -46,16 +69,16 @@ def get_average_RGB_from_csv(i):
         green_measured_avg = green_measured / n_lines
         blue_measured_avg = blue_measured / n_lines 
     
-
+    # return the average of r, g, b values
     return(red_measured_avg, green_measured_avg, blue_measured_avg)
 
-match_colors = {}                                               # initializing the colors dict for color matching
 def color_matching(i):
     DETECTED_COLOR = None
 
     r_avg, g_avg, b_avg =  get_average_RGB_from_csv(i)
     #print(r_avg, g_avg, b_avg)
 
+    # About to change if any miss dectection
     if r_avg > 95 and g_avg > 12 and g_avg < 40 and b_avg > 5 and b_avg < 25:
         DETECTED_COLOR = "red"
     elif r_avg > 80 and g_avg > 45 and g_avg < 100 and b_avg > 15 and b_avg < 50:
@@ -106,10 +129,6 @@ def get_both_sensor_color():
         DETECTED_COLOR_RIGHT = color_matching("right")
     print(f"left: {DETECTED_COLOR_LEFT}, right: {DETECTED_COLOR_RIGHT}")
     return (DETECTED_COLOR_LEFT, DETECTED_COLOR_RIGHT)
-     
-# # #     return (DETECTED_COLOR_LEFT, DETECTED_COLOR_RIGHT)
-
-
 
 if __name__ == "__main__": 
     get_both_sensor_color()
