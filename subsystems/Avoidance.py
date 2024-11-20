@@ -27,13 +27,13 @@ def avoid_block_left():
     
     #back up 5cm
     print("initial backup")
-    wheel_position(-200,-200,2)
-    time.sleep(0.2)
+    wheel_position(-5,-5,2)
+    time.sleep(0.1)
     
     #turn 90 degrees
     print("first rotate")
     rotate(25,0.05)
-    time.sleep(0.2)
+    time.sleep(0.1)
 
     #Check if the robot detected blue while moving forward 
     if stop_event.is_set():
@@ -49,8 +49,8 @@ def avoid_block_left():
 
     #move forward 10cm
     print("first forwards")
-    wheel_position(400,400,1)
-    time.sleep(0.2)
+    wheel_position(15,15,1)
+    time.sleep(0.1)
 
     #Check if the robot detected blue while moving forward 
     if stop_event.is_set():
@@ -67,7 +67,7 @@ def avoid_block_left():
     #turn 90 degrees back
     print("second rotate")
     rotate_right(25,0.05)
-    time.sleep(0.2)
+    time.sleep(0.1)
 
     if stop_event.is_set():
         print("Blue color detected!")
@@ -80,8 +80,8 @@ def avoid_block_left():
     
     #move forward 20cm
     print("second forwards")
-    wheel_position(600,600,1)
-    time.sleep(0.2)
+    wheel_position(20,20,1)
+    time.sleep(0.1)
 
     if stop_event.is_set():
         print("Blue color detected!")
@@ -92,10 +92,15 @@ def avoid_block_left():
         avoid_block_right()
         return
     
+    rotate_right(25, 0.05)
+    time.sleep(0.1)
     
-
+    wheel_position(10, 10, 1)
+    time.sleep(0.1)
     
-
+    rotate(35, 0.05)
+    time.sleep(0.1)
+    
     #Finish the thread
     thread.join()
 
