@@ -40,4 +40,4 @@ def collect_color_sensor_data(left_color_array, right_color_array):
         pass
     
 if __name__ == "__main__":
-     collect_color_sensor_data()
+    collect_color_sensor_data()
