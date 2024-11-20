@@ -6,7 +6,7 @@ It must be run on the robot.
 """
 
 # Add your imports here, if any
-from subsystems.utils.brick import EV3ColorSensor, wait_ready_sensors, TouchSensor
+from utils.brick import EV3ColorSensor, wait_ready_sensors, TouchSensor
 from time import sleep
 
 # complete this based on your hardware setup
@@ -23,21 +23,21 @@ def collect_color_sensor_data(left_color_array, right_color_array):
     try:
         i = 0
         # output_file = open(COLOR_SENSOR_DATA_FILE, "w")
-        while i<10:
+        while i<4:
                 left_colors = COLOR_SENSOR_LEFT.get_rgb() #Hungarian notation, array of [R, G, B] colors
                 right_colors = COLOR_SENSOR_RIGHT.get_rgb()
                 # sColors = str(aColors[0]) + "," + str(aColors[1]) + "," + str(aColors[2])
                 if (left_colors != [None, None, None]):
-                    print(f"left color added : {left_colors}" )
+                    #print(f"left color added : {left_colors}" )
                     left_color_array.append(left_colors)
                 if (right_colors != [None, None, None]):
-                    print(f"right color added : {right_colors}" )
+                    # print(f"right color added : {right_colors}" )
                     right_color_array.append(right_colors)
-                sleep(0.02)
+                sleep(0.01)
                 i = i + 1
         
     except BaseException:  # capture all exceptions including KeyboardInterrupt (Ctrl-C)
         pass
     
 if __name__ == "__main__":
-    collect_color_sensor_data()
+     collect_color_sensor_data()
