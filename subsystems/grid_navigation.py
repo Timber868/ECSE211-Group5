@@ -25,31 +25,33 @@ red_lines_counter = 0
 red_detected = False
 
 # ----------------- Functions -----------------------------------
-def rgb_to_string(rgb_arr):
+def rgb_to_string(rgb_arr) -> str:
     if rgb_arr == [None, None, None]:
         return "None"
     if rgb_arr[0] > 200 and rgb_arr[1] < 100 and rgb_arr[2] < 100:
         return "RED"
     return "None"
 
-def advance_step():
+def advance_step() -> None:
     """
     If red_detected is True, the robot moves forward or rotates based on whether the robot is at the end of a line (line index is multiple of 9)
     When the robot rotates, it first moves back a little to avoid the wall in front
     If red_detected is False, the robot moves forward
     """
+
+    rotate_points = [7, 13, 20]
     # case 1: red line
     if red_detected:
-        if red_lines_counter % 9 == 0:          # end of straight line: go back a little and rotate left (to avoid the wall in front)
-            wheel_position(-180, -180, 1)
+        if red_lines_counter in rotate_points:          # end of straight line: go back a little and rotate left (to avoid the wall in front)
+            wheel_position(-5, -5, 1)
             rotate(90, 0.1)
         else:
-            wheel_position(180, 180, 0.5)       # any "normal" red line: go forward a little
+            wheel_position(5, 5, 0.5)       # any "normal" red line: go forward a little
         red_lines_counter += 1
     else:
-        wheel_position(120, 120, 0.5)           # no red line: go forward a little
+        wheel_position(1, 1, 0.5)           # no red line: go forward a little
 
-def check_color():
+def check_color() -> None:
     """
     Measures the color on the ground and sets the global variable red_detected to True if both sensors detect red
     """
@@ -67,7 +69,7 @@ def check_color():
         else:
             red_detected = False
 
-def polling_action():
+def polling_action() -> None:
     """
     Checks if global variable red_detected is True and performs the necessary actions
     If red_detected is True, the grid's completion is updated and the robot moves forward or rotates based on the decision in advance_step()
@@ -115,7 +117,7 @@ def polling_action():
             print("-----------------")
 
             # check if the grid is complete (complete when there are 3 incomplete rows (containing at least one 0))
-            incomplete_rows = len([i for i in range(9) if 0 in grid[i]])
+            incomplete_rows = len([i for i in range(7) if 0 in grid[i]])
             print("Incomplete rows: ", incomplete_rows)
             if incomplete_rows == 3:
                 print("Traversal complete!")
