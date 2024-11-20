@@ -131,8 +131,8 @@ def main():
     check_color_thread = threading.Thread(target=check_color)
     check_color_thread.start()
 
-    poll_red_thread = threading.Thread(target=polling_action)
-    poll_red_thread.start()
+    while True:
+        polling_action()
 
 
 
