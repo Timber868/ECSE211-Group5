@@ -6,7 +6,7 @@
 # Color set: red, yellow, orange, green, water, ground, nothing.
 # @anthor: Zhengxuan Zhao
 
-from utils.brick import EV3ColorSensor, wait_ready_sensors, TouchSensor, Motor
+from subsystems.utils.brick import EV3ColorSensor, wait_ready_sensors, TouchSensor, Motor
 from time import sleep
 
 # INITIALIZING OBJECTS
