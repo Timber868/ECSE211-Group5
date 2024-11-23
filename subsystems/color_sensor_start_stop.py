@@ -43,21 +43,13 @@ def collect_color_sensor_data(left_color_array, right_color_array):
     except BaseException:  # capture all exceptions including KeyboardInterrupt (Ctrl-C)
         pass
 
-def get_average_RGB_from_csv(i):
+def get_average_RGB_from_csv(array):
         
     red_measured, green_measured, blue_measured = 0, 0, 0 # reset (because of infinite while loop)
 
-    n_lines = 0  # track number of lines (measurements) to compute mean
-    collect_color_sensor_data(left_color_array,right_color_array)
-
-    a_array = []
-    if i == "left":
-        a_array = left_color_array
-    else:
-        a_array = right_color_array
-
+    n_lines = 0  # track number of lines (measurements) to compute average
         
-    for colors in a_array:
+    for colors in array:
         r, g, b = colors # convert string to 3 floats
         if r != None and g != None and b != None:
             red_measured += r
@@ -107,7 +99,7 @@ def get_left_sensor_color():
     DETECTED_COLOR = None
     while DETECTED_COLOR == None:
         collect_color_sensor_data(left_color_array,right_color_array)
-        DETECTED_COLOR = color_matching("left")
+        DETECTED_COLOR = color_matching(left_color_array)
     print(f"left color detected: {DETECTED_COLOR}")
     return DETECTED_COLOR
 
@@ -115,7 +107,7 @@ def get_right_sensor_color():
     DETECTED_COLOR = None
     while DETECTED_COLOR == None:
         collect_color_sensor_data(left_color_array,right_color_array)
-        DETECTED_COLOR = color_matching("right")
+        DETECTED_COLOR = color_matching(right_color_array)
     print(f"right color detected: {DETECTED_COLOR}")
     return DETECTED_COLOR
 
@@ -124,8 +116,8 @@ def get_both_sensor_color():
     DETECTED_COLOR_RIGHT = None
     while DETECTED_COLOR_LEFT == None or DETECTED_COLOR_RIGHT == None:
         collect_color_sensor_data(left_color_array,right_color_array)
-        DETECTED_COLOR_LEFT = color_matching("left")
-        DETECTED_COLOR_RIGHT = color_matching("right")
+        DETECTED_COLOR_LEFT = color_matching(left_color_array)
+        DETECTED_COLOR_RIGHT = color_matching(right_color_array)
     print(f"left: {DETECTED_COLOR_LEFT}, right: {DETECTED_COLOR_RIGHT}")
     return (DETECTED_COLOR_LEFT, DETECTED_COLOR_RIGHT)
 
