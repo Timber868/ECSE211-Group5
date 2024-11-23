@@ -1,5 +1,5 @@
 from subsystems.utils.brick import Motor, EV3GyroSensor, EV3ColorSensor, wait_ready_sensors
-from subsystems.motor_settings import rotate, rotate_right, wheel_position
+from subsystems.motor_settings import rotate, rotate_right, wheel_limits, wheel_position, power, speed
 import threading
 import time
 
@@ -25,117 +25,61 @@ thread = threading.Thread(target=detect_color)
 def avoid_block_left():
     thread.start()
     
+    #Set the limits of the wheels so that the result is always the same
+    wheel_limits(50,80,50,80)
+    
+    speed(200, 200)
+    
     #
     #back up 5cm
     #
 
     print("initial backup")
-    wheel_position(-5,-5,2)
-    time.sleep(0.1)
-
-    #turn 25 degrees
-    #We try to avoid the block on the left side and every 5 degrees
-    #we check if the robot detected blue while moving forward
-    #If blue is detected, we retrace back to our initial avoidance position
-    print("first rotate")
-
-    total_degrees = 5
-    while(total_degrees < 25):
-        rotate(5,0.05)
-        total_degrees += 5
-        time.sleep(0.1)
-        if stop_event.is_set():
-            print("Blue color detected!")
-            retrace_step_1(total_degrees)
-            avoid_block_right()
-            return
+    wheel_position(-2,-2,0.05)
     
-    #
-    #move forward 10cm
-    #We try to move forward 
-    #If blue is detected, we retrace back to our initial avoidance position
-    print("first forwards")
+    print("rotate 1")
+    #turn 1
+    #try to position it so that the block passes through our arms
+    rotate(6,0.05)
     
-    total_cm = 5
-    while(total_cm < 15):
-        wheel_position(5,15,1)
-        total_cm += 5
-        time.sleep(0.1)
-        if stop_event.is_set():
-            print("Blue color detected!")
-            retrace_step_2(total_cm)
-            avoid_block_right()
-            return
+    print("forwards 1")
+    #forward 1
+    #Try to position the block close to the backwheel
+    wheel_position(10,10,2)
     
-    #
-    #turn 25 degrees right
-    #
-    print("second rotate")
-
-    total_degrees = 5
-    while(total_degrees < 25):
-        rotate_right(5,0.05)
-        total_degrees += 5
-        time.sleep(0.1)
-        if stop_event.is_set():
-            print("Blue color detected!")
-            retrace_step_3(total_degrees)
-            avoid_block_right()
-            return
+    rotate(10, 0.05)
     
-    #
-    #move forward 20cm
-    #
-    print("second forwards")
-
-    total_cm = 5
-    while(total_cm < 20):
-        wheel_position(5,5,1)
-        total_cm += 5
-        time.sleep(0.1)
-        if stop_event.is_set():
-            print("Blue color detected!")
-            retrace_step_4(total_cm)
-            avoid_block_right()
-            return
-
-    #
-    #turn 25 degrees right
-    #
-    print("third rotate")
-
-    total_degrees = 5
-    while(total_degrees < 25):
-        rotate_right(5,0.05)
-        total_degrees += 5
-        time.sleep(0.1)
-        if stop_event.is_set():
-            print("Blue color detected!")
-            retrace_step_5(total_degrees)
-            avoid_block_right()
-            return
+    wheel_position(7, 7, 2)
     
-    # 
-    #move forward 10cm
-    #
-    print("third forward")
-
-    total_cm = 5
+    print("rotate 2")
+    rotate_right(25,0.1)
+    
+    total_cm = 0
     while(total_cm < 10):
         wheel_position(5,5,1)
         total_cm += 5
         time.sleep(0.1)
         if stop_event.is_set():
             print("Blue color detected!")
-            retrace_step_6(total_cm)
-            avoid_block_right()
             return
-    #Final rotation to initial direction
-    #No need to retrace back as ther should not be any water   
-    rotate(35, 0.05)
-    time.sleep(0.1)
     
-    #Finish the thread
+    rotate_right(35,0.05)
+    
+    wheel_position(10,10,1)
+    
+    rotate(10, 0.05)
+    
+    wheel_position(10, 10, 1)
+    
+    rotate(40, 0.05)
+    
+    print("rotate 40 done")
+    wheel_position(-10, -10, 2)
+    
+    rotate_right(20, 0.05)
+    
+    time.sleep(10)
+
     thread.join()
 
 def retrace_step_1(right_degrees = 25):

@@ -7,7 +7,7 @@ motor_left = brick.Motor("C")
 motor_right = brick.Motor("B")
 
 # connect GyroSensor to port S1
-gyro = brick.EV3GyroSensor(1)
+gyro = brick.EV3GyroSensor(2)
 
 # waits until every previously defined sensor is ready
 brick.wait_ready_sensors()
@@ -48,11 +48,14 @@ def rotate(angle, speed):  # speed: 0.01 = very fast, 0.25 = very slow
     #if (angle < 0):
     #    angle = angle + 360
     gyro.reset_measure()
+    
     #time.sleep(0.1)
     new_angle = 0
     result = gyro.get_abs_measure()
+
     while(result is None):
         result = gyro.get_abs_measure()
+
     new_angle = (result - angle)
     
     while(result > new_angle):
