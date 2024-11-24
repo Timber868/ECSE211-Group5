@@ -12,14 +12,6 @@ def arms_reset():
     motor_catcher.reset_encoder()
     motor_sensor.reset_encoder()
 
-# def open_catcher():
-#     motor_catcher.set_position(100)
-#     time.sleep(1)
-
-# def close_catcher():
-#     motor_catcher.set_position_relative(-110)
-#     time.sleep(2)
-    
 def stop_sensor_arm():
     motor_sensor.set_power(0)
     
