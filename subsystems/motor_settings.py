@@ -7,7 +7,7 @@ motor_left = brick.Motor("C")
 motor_right = brick.Motor("B")
 
 # connect GyroSensor to port S1
-gyro = brick.EV3GyroSensor(1)
+gyro = brick.EV3GyroSensor(2)
 
 # waits until every previously defined sensor is ready
 brick.wait_ready_sensors()
@@ -38,34 +38,32 @@ def wheel_position(p1,p2,wait):
     # get motor speed here time.sleep(p1/motor_speed)
     time.sleep(wait)
     
-def rotate(angle, speed):  # speed: 0.01 = very fast, 0.25 = very slow
-    #angle = -1*angle
-    #if (angle < 0):
-    #    angle = angle + 360
+def rotate(angle): 
+    angle = angle - 7
     gyro.reset_measure()
-    #time.sleep(0.1)
+    time.sleep(0.1)
     new_angle = 0
     result = gyro.get_abs_measure()
     while(result is None):
         result = gyro.get_abs_measure()
+    print(result)
     new_angle = (result - angle)
-    
+    print(new_angle)
+    print()
     while(result > new_angle):
-        wheel_position(-40,40,speed)
+        wheel_position(-20,20,0.075)
         current = gyro.get_abs_measure()
         
         # current == result
-        while(current is None or current == 0):
+        while(current is None or (result != 0 and current == 0)):
             current = gyro.get_abs_measure()
+        print(current)
         result = current
-        time.sleep(0.1)
 
-def rotate_right(angle, speed):  # speed: 0.01 = very fast, 0.25 = very slow
-    #angle = -1*angle
-    #if (angle < 0):
-    #    angle = angle + 360
+def rotate_right(angle):  
+    angle = angle - 7
     gyro.reset_measure()
-    #time.sleep(0.1)
+    time.sleep(0.1)
     new_angle = 0
     result = gyro.get_abs_measure()
     while(result is None):
@@ -76,15 +74,15 @@ def rotate_right(angle, speed):  # speed: 0.01 = very fast, 0.25 = very slow
     print(new_angle)
     
     while(result < new_angle):
-        wheel_position(40,-40,speed)
+        wheel_position(20,-20,0.075)
         current = gyro.get_abs_measure()
         
         # current == result
         while(current is None or current == 0):
             current = gyro.get_abs_measure()
+        print(current)
         result = current
-        time.sleep(0.1)
-    
+        
 def wheel_limits(p1,d1,p2,d2):
     motor_left.set_limits(power=p1, dps=d1)
     motor_right.set_limits(power=p2, dps=d2)
