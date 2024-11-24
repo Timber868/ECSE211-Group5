@@ -9,6 +9,24 @@ stop_event = threading.Event()
 motor_left = Motor("C")
 motor_right = Motor("B")
 
+# Parameters:
+RW = 0.021  # Radius of wheel in cm
+RB = 0.05   # Robot radius in m which is half the distance between the wheels
+DISTTODEG = 180 / (3.1416 * RW)  # Scale factor for distance
+ORIENTTODEG = RB / RW            # Scale factor for rotation
+
+#If no speed is specified it is set to 200
+def MoveDistFwd(dist, speed = 200):
+    try:
+        motor_left.set_limits(50, speed)   # Set speed, same rotation
+        motor_right.set_limits(50, speed)  # Set speed, same rotation
+        motor_left.set_position_relative(int(dist * DISTTODEG / 100))   # Rotate wheels
+        motor_right.set_position_relative(int(dist * DISTTODEG / 100))  # Rotate wheels
+        motor_right.wait_is_stopped()  # Wait for the motor to stop and checks every 0.1s
+        motor_left.wait_is_stopped()
+    except IOError as error:
+        print(error)
+
 
 def detect_color():
     COLOR_SENSOR_LEFT = EV3ColorSensor(4)
@@ -27,68 +45,51 @@ def detect_color():
 # Create the thread
 thread = threading.Thread(target=detect_color)
 
-def avoid_block_left():
-    thread.start()
-    
-    
-    Turn(90, 200)
+#Calculated values:
+#For 10cm wait 1.5s
+#For 20cm, wait 3s
+#For 40cm wait 6s
 
-    time.sleep(10)
-    #Set the limits of the wheels so that the result is always the same
-    wheel_limits(50,80,50,80)
-    
-    speed(200, 200)
-    
-    #
-    #back up 5cm
-    #
 
+def avoid_block_left(): 
+    #Back up 1
     print("initial backup")
-    wheel_position(-2,-2,0.05)
-    
+    MoveDistFwd(-2, 200)
+    time.sleep(0.5)
+ 
     print("rotate 1")
     #turn 1
-    #try to position it so that the block passes through our arms
-    rotate(6,0.05)
+    Turn(-23, 200)
+    time.sleep(1)
     
-    print("forwards 1")
-    #forward 1
-    #Try to position the block close to the backwheel
-    wheel_position(10,10,2)
+    #Back up 2
+    print("backup 2")
+    MoveDistFwd(6, 200)
+    time.sleep(1)
     
-    rotate(10, 0.05)
+    Turn(-35, 200)
+    time.sleep(1)
     
-    wheel_position(7, 7, 2)
+    MoveDistFwd(13,200)
+    time.sleep(2)
     
-    print("rotate 2")
-    rotate_right(25,0.1)
+    Turn(45, 200)
+    time.sleep(1)
     
-    total_cm = 0
-    while(total_cm < 10):
-        wheel_position(5,5,1)
-        total_cm += 5
-        time.sleep(0.1)
-        if stop_event.is_set():
-            print("Blue color detected!")
-            return
+    MoveDistFwd(15, 200)
+    time.sleep(2.25)
     
-    rotate_right(35,0.05)
+    Turn(45, 200)
+    time.sleep(1)
     
-    wheel_position(10,10,1)
+    MoveDistFwd(10, 200)
+    time.sleep(1.5)
     
-    rotate(10, 0.05)
+    Turn(-75, 200)
     
-    wheel_position(10, 10, 1)
+    MoveDistFwd(-10, 200)
+    time.sleep(1.5)
     
-    rotate(40, 0.05)
-    
-    print("rotate 40 done")
-    wheel_position(-10, -10, 2)
-    
-    rotate_right(20, 0.05)
-    
-    time.sleep(10)
-
     thread.join()
 
 def retrace_step_1(right_degrees = 25):
