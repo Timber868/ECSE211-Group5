@@ -92,6 +92,24 @@ def rotate_right(angle, speed):  # speed: 0.01 = very fast, 0.25 = very slow
             current = gyro.get_abs_measure()
         result = current
         time.sleep(0.1)
+
+
+RW = 0.021  # Radius of wheel in cm
+RB = 0.03   # Robot radius in m which is half the distance between the wheels
+ORIENTTODEG = RB/RW
+
+#function to turn without the help of the gyro sensor
+def Turn(angle, speed):
+    try:
+        motor_left.set_limits(50 , speed)  # Set speed
+        motor_right.set_limits(50 , speed)  # Set speed
+
+        motor_right.set_position_relative(int(-angle * ORIENTTODEG))
+        motor_left.set_position_relative(int(angle * ORIENTTODEG))
+        motor_right.wait_is_stopped(0.1) # Wait for the motor to stop and checks every 0.1s
+    except IOError as error:
+        print(error)
+
     
 def wheel_limits(p1,d1,p2,d2):
     motor_left.set_limits(power=p1, dps=d1)

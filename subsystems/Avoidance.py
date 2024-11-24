@@ -1,5 +1,5 @@
 from subsystems.utils.brick import *
-from subsystems.motor_settings import rotate, rotate_right, wheel_limits, wheel_position, power, speed
+from subsystems.motor_settings import rotate, rotate_right, wheel_limits, wheel_position, power, speed, Turn
 import threading
 import time
 
@@ -8,21 +8,6 @@ stop_event = threading.Event()
 # orientation
 motor_left = Motor("C")
 motor_right = Motor("B")
-
-
-RW = 0.055  # Radius of wheel in cm
-RB = 0.115  # Robot radius in m which is half the distance between the wheels
-ORIENTTODEG = RB/RW
-
-def Rotate(BP, angle, speed):
-    try:
-        BP.set_motor_limits(motor_left, 50, speed)  # Set speed
-        BP.set_motor_limits(motor_right, 50, speed)  # Set speed
-        BP.set_motor_position_relative(motor_left, int(angle * ORIENTTODEG))  # Rotate L wheel +ve
-        BP.set_motor_position_relative(motor_right, int(-angle * ORIENTTODEG))  # Rotate R wheel -ve
-        motor_right.wait_is_stopped(0.1) # Wait for the motor to stop and checks every 0.1s
-    except IOError as error:
-        print(error)
 
 
 def detect_color():
@@ -45,6 +30,10 @@ thread = threading.Thread(target=detect_color)
 def avoid_block_left():
     thread.start()
     
+    
+    Turn(90, 200)
+
+    time.sleep(10)
     #Set the limits of the wheels so that the result is always the same
     wheel_limits(50,80,50,80)
     
