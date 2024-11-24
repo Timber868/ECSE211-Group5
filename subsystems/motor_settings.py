@@ -95,7 +95,7 @@ def rotate_right(angle, speed):  # speed: 0.01 = very fast, 0.25 = very slow
 
 
 RW = 0.021  # Radius of wheel in cm
-RB = 0.03   # Robot radius in m which is half the distance between the wheels
+RB = 0.05   # Robot radius in m which is half the distance between the wheels
 ORIENTTODEG = RB/RW
 
 #function to turn without the help of the gyro sensor
