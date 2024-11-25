@@ -115,7 +115,7 @@ def avoid_water():
         time.sleep(5)
 
         #Turn left away from the water
-        Turn(70, 200)
+        Turn(50, 200)
         time.sleep(1)
 
         #Move forward
