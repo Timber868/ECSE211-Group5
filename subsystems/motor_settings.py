@@ -72,7 +72,7 @@ def rotate_right(angle, speed):  # speed: 0.01 = very fast, 0.25 = very slow
     #angle = -1*angle
     #if (angle < 0):
     #    angle = angle + 360
-    gyro.reset_measure()
+    #gyro.reset_measure()
     #time.sleep(0.1)
     new_angle = 0
     result = gyro.get_abs_measure()
@@ -83,8 +83,10 @@ def rotate_right(angle, speed):  # speed: 0.01 = very fast, 0.25 = very slow
     print(result)
     print(new_angle)
     
+    wheel_limits(50,70,50,70)
+            
     while(result < new_angle):
-        wheel_position(1.4,-1.4,speed)
+        wheel_position(0.7,-0.7,speed)
         current = gyro.get_abs_measure()
         
         # current == result
