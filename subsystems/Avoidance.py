@@ -13,7 +13,7 @@ motor_left = Motor("C")
 motor_right = Motor("B")
 
 # Parameters:
-RW = 0.021  # Radius of wheel in cm
+RW = 0.021  # Radius of wheel in m
 RB = 0.05   # Robot radius in m which is half the distance between the wheels
 DISTTODEG = 180 / (3.1416 * RW)  # Scale factor for distance
 ORIENTTODEG = RB / RW            # Scale factor for rotation
@@ -125,11 +125,14 @@ def avoid_water():
 
             #Keep on moving until our sensor is back in the water
             while get_left_sensor_color() != "water":
-                MoveDistFwd(5, 200)
-                time.sleep(0.75)
+                color_left = get_left_sensor_color()
+                print("Left: ", color_left)
 
                 Turn(-10, 200)
                 time.sleep(0.75)
+
+                MoveDistFwd(10, 200)
+                time.sleep(0.75)           
 
             #Rotate a bit out of the water
             Turn(10, 200)
@@ -151,6 +154,9 @@ def avoid_water():
         while gyro.get_abs_measure() != target:
             #Back up and turn until the sensor is out of the water
             while get_right_sensor_color() == "water":
+                color_left = get_right_sensor_color()
+                print("Right: ", color_left)
+
                 Turn(-5, 200)
                 time.sleep(0.75)
                 
