@@ -1,5 +1,6 @@
+from subsystems.utils import brick
 from subsystems.utils.brick import *
-from subsystems.motor_settings import Turn
+from subsystems.motor_settings import Turn, speed, wheel_limits
 from subsystems.color_sensor_start_stop import get_left_sensor_color, get_right_sensor_color
 
 import threading
@@ -37,6 +38,9 @@ def MoveDistFwd(dist, speed = 200):
 
 
 def avoid_block_left(): 
+    speed(200)
+    wheel_limits(50, 80, 50, 80)
+
     #Back up 1
     print("initial backup")
     MoveDistFwd(-5, 200)
@@ -73,6 +77,12 @@ def avoid_block_left():
     time.sleep(1)
     
 def avoid_water():
+    gyro = brick.EV3GyroSensor(2)
+
+    # waits until gyro sensor is ready
+    brick.wait_ready_sensors()
+    gyro.set_mode('abs')
+    
     color_left = get_left_sensor_color()
     color_right = get_right_sensor_color()
     print("Left: ", color_left)
@@ -82,7 +92,7 @@ def avoid_water():
         print("Both sensors detected water")
         #Back up until youre out of water
         MoveDistFwd(-5, 200)
-        time.sleep(1)
+        time.sleep(0.75)
 
         color_left = get_left_sensor_color()
         color_right = get_right_sensor_color()
@@ -91,36 +101,72 @@ def avoid_water():
         print("Left sensor detected water")
         #Back up until youre out of water
         Turn(25, 200)
+        time.sleep(4)
         MoveDistFwd(-5, 200)
-        time.sleep(1)
+        time.sleep(0.75)
+
+        #Use the gyro sensor to measure and see once we are on the other side of the water
+        gyro.reset_measure()
+        result = gyro.get_abs_measure()
         
-        while get_right_sensor_color() != "water":
-            Turn
+        if result < 180:    
+            target = 360 - result * 2
+        else:
+            target = result * 2 - 360
 
-        #Turn right away from the water
-        Turn(45, 200)
-        time.sleep(1)
+        while gyro.get_abs_measure() != target:
+            #Back up and turn until the sensor is out of the water
+            while get_left_sensor_color() == "water":
+                Turn(5, 200)
+                time.sleep(0.75)
+                
+                MoveDistFwd(-5, 200)
+                time.sleep(0.75)
 
-        #Move forward
-        MoveDistFwd(10, 200)
-        time.sleep(1.5)
+            #Keep on moving until our sensor is back in the water
+            while get_left_sensor_color() != "water":
+                MoveDistFwd(5, 200)
+                time.sleep(0.75)
+
+                Turn(-10, 200)
+                time.sleep(0.75)
+
+            #Rotate a bit out of the water
+            Turn(10, 200)
+
     
     if color_right == "water":
         print("Right sensor detected water")
         #Back up until youre out of water
-        Turn(25, 200)
+        Turn(-25, 200)
+        time.sleep(4)
         MoveDistFwd(-5, 200)
-        time.sleep(1)
+        time.sleep(0.75)
         
-        time.sleep(5)
+        if result < 180:    
+            target = 360 - result * 2
+        else:
+            target = result * 2 - 360
 
-        #Turn left away from the water
-        Turn(50, 200)
-        time.sleep(1)
+        while gyro.get_abs_measure() != target:
+            #Back up and turn until the sensor is out of the water
+            while get_right_sensor_color() == "water":
+                Turn(-5, 200)
+                time.sleep(0.75)
+                
+                MoveDistFwd(5, 200)
+                time.sleep(0.75)
 
-        #Move forward
-        MoveDistFwd(10, 200)
-        time.sleep(1.5)
+            #Keep on moving until our sensor is back in the water
+            while get_right_sensor_color() != "water":
+                MoveDistFwd(5, 200)
+                time.sleep(0.75)
+
+                Turn(10, 200)
+                time.sleep(0.75)
+
+            #Rotate a bit out of the water
+            Turn(-10, 200)
 
 
 # Create the thread
