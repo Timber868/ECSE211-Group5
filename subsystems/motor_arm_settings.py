@@ -24,11 +24,13 @@ def stop_sensor_arm():
     motor_sensor.set_power(0)
     
 def rotate_sensor_arm():
+    global isArmOpen
     motor_sensor.set_position_relative(100)
     isArmOpen = True
     time.sleep(2)
     
 def rotate_initial_position_arm():
+    global isArmOpen
     motor_sensor.set_position_relative(-100)
     isArmOpen = True
     time.sleep(2)

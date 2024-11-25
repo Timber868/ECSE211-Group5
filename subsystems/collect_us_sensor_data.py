@@ -18,6 +18,27 @@ COLOR_SENSOR_DATA_FILE = "../data_analysis/color_sensor.csv"
 
 wait_ready_sensors(True) # Input True to see what the robot is trying to initialize! False to be silent.
 
+def collect_color_sensor_data(left_color_array, right_color_array):
+    "Collect color sensor data."
+    try:
+        i = 0
+        # output_file = open(COLOR_SENSOR_DATA_FILE, "w")
+        while i<4:
+                left_colors = COLOR_SENSOR_LEFT.get_rgb() #Hungarian notation, array of [R, G, B] colors
+                right_colors = COLOR_SENSOR_RIGHT.get_rgb()
+                # sColors = str(aColors[0]) + "," + str(aColors[1]) + "," + str(aColors[2])
+                if (left_colors != [None, None, None]):
+                    #print(f"left color added : {left_colors}" )
+                    left_color_array.append(left_colors)
+                if (right_colors != [None, None, None]):
+                    # print(f"right color added : {right_colors}" )
+                    right_color_array.append(right_colors)
+                sleep(0.01)
+                i = i + 1
+        
+    except BaseException:  # capture all exceptions including KeyboardInterrupt (Ctrl-C)
+        pass
+
 def detect_block():
     detected = False
     distance = 0
