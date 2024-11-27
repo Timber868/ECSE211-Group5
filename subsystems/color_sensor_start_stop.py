@@ -76,10 +76,10 @@ def color_matching(i):
     DETECTED_COLOR = None
 
     r_avg, g_avg, b_avg =  get_average_RGB_from_csv(i)
-    #print(r_avg, g_avg, b_avg)
+#     print(r_avg, g_avg, b_avg)
 
     # About to change if any miss dectection
-    if r_avg > 95 and g_avg > 12 and g_avg < 40 and b_avg > 5 and b_avg < 25:
+    if r_avg > 95 and g_avg > 12 and g_avg < 55 and b_avg > 5 and b_avg < 25:
         DETECTED_COLOR = "red"
     elif r_avg > 80 and g_avg > 45 and g_avg < 100 and b_avg > 15 and b_avg < 50:
         DETECTED_COLOR = "orange"
@@ -87,7 +87,7 @@ def color_matching(i):
         DETECTED_COLOR = "green"
     elif r_avg > 130 and g_avg > 90 and g_avg < 250 and b_avg > 8 and b_avg < 30:
         DETECTED_COLOR = "yellow"
-    elif r_avg > 15 and r_avg < 40 and g_avg > 15 and g_avg < 50 and b_avg > 20 and b_avg< 60:
+    elif r_avg > 15 and r_avg < 40 and g_avg > 15 and g_avg < 55 and b_avg > 20 and b_avg< 60:
         DETECTED_COLOR = "water"
     elif r_avg > 20 and g_avg > 30 and g_avg < 175 and b_avg < 24:
         DETECTED_COLOR = "ground"    
