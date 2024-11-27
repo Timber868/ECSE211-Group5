@@ -110,6 +110,21 @@ def Turn(angle, speed):
     except IOError as error:
         print(error)
 
+DISTTODEG = 180 / (3.1416 * RW)  # Scale factor for distance
+ORIENTTODEG = RB / RW            # Scale factor for rotation
+
+#If no speed is specified it is set to 200
+def MoveDistFwd(dist, speed = 200):
+    try:
+        motor_left.set_limits(50, speed)   # Set speed, same rotation
+        motor_right.set_limits(50, speed)  # Set speed, same rotation
+        motor_left.set_position_relative(int(dist * DISTTODEG / 100))   # Rotate wheels
+        motor_right.set_position_relative(int(dist * DISTTODEG / 100))  # Rotate wheels
+        motor_right.wait_is_stopped()  # Wait for the motor to stop and checks every 0.1s
+        motor_left.wait_is_stopped()
+    except IOError as error:
+        print(error)
+
     
 def wheel_limits(p1,d1,p2,d2):
     motor_left.set_limits(power=p1, dps=d1)
