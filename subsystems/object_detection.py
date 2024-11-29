@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-from utils.brick import EV3UltrasonicSensor, wait_ready_sensors, reset_brick
-from motor_settings import *
-from motor_arm_settings import *
-from Avoidance import *
-from color_sensor_start_stop import *
+from subsystems.utils.brick import EV3UltrasonicSensor, wait_ready_sensors, reset_brick
+from subsystems.motor_settings import *
+from subsystems.motor_arm_settings import *
+from subsystems.Avoidance import *
+from subsystems.color_sensor_start_stop import *
 from time import sleep
-from math import sqrt
+import math
 import threading
 
 US_SENSOR = EV3UltrasonicSensor(3)
@@ -15,54 +15,46 @@ wait_ready_sensors(True) # Input True to see what the robot is trying to initial
 
 DETECTED_BLOCKS = []
 
-def detect_block(is_detecting_grid, angle):
+angle_to_rotate_back = None
+is_left = False
+is_right = False
+
+def detect_block(is_near_wall):
     detected = False
-
-    new_angle = 0
-    current_angle = gyro.get_abs_measure()
-    while(current_angle is None):
-        current_angle = gyro.get_abs_measure()
-    new_angle = current_angle - angle
-    
-
-    while(current_angle > new_angle):
-        wheel_limits(60,80,60,80)
-        wheel_position(-0.7,0.7,0.1)
+    max_distance_to_detect = 0
+    current_angle = 0
+    for i in range(0,45):
+        Turn(-5, 90)
         
+        current_angle = current_angle + 5
         distance = US_SENSOR.get_value()
         print(distance)
-        block_detected = any(abs(d - distance) < 2 or abs(a - current_angle) < 2 for d, a in DETECTED_BLOCKS)
+        block_detected = any(abs(d - distance) < 2 or abs(a - current_angle) < 5 for d, a in DETECTED_BLOCKS)
+
+        if is_near_wall:
+            max_distance_to_detect = detect_wall_distance()
+        else:
+            max_distance_to_detect = 25
 
         if block_detected == False:
-            if(distance <= 25 and distance > 0):
-                print("detected")
-                wheel_limits(100,180,100,180)
-                wheel_position(distance -5,distance-5,3)
-                                
-                if is_detecting_grid:
-                    DETECTED_BLOCKS.append((distance, current_angle))
-
-                    rest_distance = sweep_and_align()
-                    wheel_limits(100,180,100,180)
-                    if rest_distance is not None:
-                        wheel_position(rest_distance,rest_distance,1)
-                    else:
-                        wheel_position(3,3,1)
-
-                    move_and_catch(distance)
-                print("break")
+            if(distance <= max_distance_to_detect and distance > 0):
                 detected = True
-                if not is_detecting_grid:
-                    break
-                    
-            current = gyro.get_abs_measure()
-            while(current is None):
-                current = gyro.get_abs_measure()
-            current_angle = current
-            print(current_angle)
-            print(new_angle)
-        
-    rotate_right(80, 0.01)
+                wheel_limits(100,180,100,180)
+                wheel_position(distance-3,distance-3,2)
+                                
+                DETECTED_BLOCKS.append((distance, current_angle))
+
+                sweep_and_align()
+
+                move_and_catch(distance)
+                
+                if is_right:
+                    Turn(-angle_to_rotate_back, 70)
+                elif is_left:
+                    Turn(angle_to_rotate_back, 70)
+
+
+    Turn(90, 80)
     return detected
 
 def sweep_and_align():
@@ -70,83 +62,114 @@ def sweep_and_align():
     is_right = False
     min_distance = 6
     final_distance = None
+
+    initial_angle = gyro.get_abs_measure()
     
-    wheel_limits(50,70,50,70)
-            
-    current_angle = gyro.get_abs_measure()
-    while(current_angle is None):
-        current_angle = gyro.get_abs_measure()
-        
-    new_angle = current_angle - 2
-    while current_angle > new_angle:
+    i = 0
+    while i < 5:
+        Turn(-5, 70)
         distance = US_SENSOR.get_value()
-        
+        print(distance)
         if 0 <= distance < min_distance:
+            print("rotated left")
             is_left = True
             final_distance = distance
             break
-        
-        wheel_position(-0.5, 0.5, 0.1)  # Sweep left
 
-        current = gyro.get_abs_measure()
-        while(current is None or current == 0):
-            current = gyro.get_abs_measure()
-        current_angle = current
-    
-    if is_left ==  False:  
-        current_angle = gyro.get_abs_measure()
-        new_angle = current_angle + 4
-        while current_angle < new_angle:
+        i = i+1
+            
+
+    if is_left == False:
+        i=0
+        while i < 10:
+            Turn(5, 70)
             distance = US_SENSOR.get_value()
+            print(distance)
 
             if 0 <= distance < min_distance:
-                final_distance = distance
+                print("rotated right")
                 is_right = True
+                final_distance = distance
                 break
 
-            wheel_position(0.5, -0.5, 0.1)  # Sweep right
-            current = gyro.get_abs_measure()
-            while(current is None or current == 0):
-                current = gyro.get_abs_measure()
-            current_angle = current
-    
-    if is_left == False and is_right == False:
-        rotate(2, 0.2)
+            i = i+1
+            
+    current_angle = gyro.get_abs_measure()
+    angle_to_rotate_back = current_angle - initial_angle
+    print("angle to rotate back")
+    print(angle_to_rotate_back)
 
-    print(f"Aligned to block at angle: {distance}")
+    #if is_right:
+        #Turn(angle_to_rotate_back, 70)
+    #elif is_left:
+        #Turn(angle_to_rotate_back, 70)
+
+    #print(f"Aligned to block at angle: {angle_to_rotate_back} at {final_distance}")
         
     if final_distance is not None:
         return final_distance
     else:
         return None
 
-    
 def move_and_catch(distance):
     is_poop = False
     rotate_sensor_arm()
     color = get_left_sensor_color()
-    if color == "yellow" or color == "orange":
+    if color == "yellow" or color == "orange" or color == "red":
         is_poop = True
         catch_poop()
     else:
         print("avoid")
     rotate_initial_position_arm()
     move_to_initial_position(distance, is_poop)
+
     
 def move_to_initial_position(distance, is_poop):
+    wheel_limits(100,180,100,180)
     if is_poop:
         wheel_position(-(distance + 10), -(distance + 10), 3)
     else:
-        wheel_position(-distance,-distance,3)
+        wheel_position(-distance +3,-distance+3,3)
 
-def sweep_and_move_to_next_grid():
-    is_obstacle = detect_block(False, 5)
+def detect_obstacles():
+    is_obstacle = False
+    for i in range(0,5):
+        Turn(-10, 90)
+        distance = US_SENSOR.get_value()
+        print(distance)
+
+        if(distance <= 25 and distance > 0):
+            is_obstacle = True
+            wheel_limits(100,180,100,180)
+            wheel_position(distance-3,distance-3,3)
+
+            rest_distance = sweep_and_align()
+            if rest_distance is not None:
+                wheel_limits(100,180,100,180)
+                wheel_position(rest_distance-1,rest_distance-1,1)
+        
     if is_obstacle:
         avoid_block()
-    else: 
-        #move to next grid
-        wheel_position(30,30,3)
+
+    return is_obstacle
+
+def detect_wall_distance():
+    rotate_sensor_arm()
+    distance = US_SENSOR.get_value()
+    rotate_initial_position_arm()
+
+    return distance
+
+def detect_at_angle():
+    Turn(20,100)
+    wheel_position(10,10,2)
+
+def deposit_blocks():
+    rotate_sensor_arm()
+    wheel_position(-25,-25,3)
+    rotate_initial_position_arm()
 
 
 if __name__ == "__main__":
     detect_block()
+
