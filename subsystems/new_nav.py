@@ -1,24 +1,59 @@
 from subsystems.motor_settings import Turn, MoveDistFwd 
-from subsystems.collect_color_sensor_data import collect_color_sensor_data
+from subsystems.color_sensor_start_stop import get_both_sensor_color
+from subsystems.obstacle_detection import detect_obstacles
 from subsystems.utils.brick import EV3ColorSensor, EV3UltrasonicSensor
 from subsystems.utils.brick import reset_brick
 import time
 import threading
-# import object avoidance function
-# 
-# 
+
+
+stop_event = threading.Event()
+
+# Thread to detect the water
+def detect_color():
+    while not stop_event.is_set():
+        color_left, color_right = get_both_sensor_color()
+        print(f"left: {color_left}, right: {color_right}")
+
+        if color_left == "water" or color_right == "water":
+            print("Water detected!")
+            stop_event.set()
+        
+        time.sleep(1)
+
+
+def first_fwd():
+    # Create and start the thread
+    thread = threading.Thread(target=detect_color)
+    thread.start()
+
+    # Boolean that becomes true whenever water or a block in the way is detected
+    obstacle_detected = False
+
+    # Move forward 5 cm at a time
+    while not obstacle_detected:
+        MoveDistFwd(5, 200)
+
+        if stop_event.is_set():
+            obstacle_detected = True
+            break
+
+        blockInTheWay = detect_obstacles()
+
+    # Wait for the detect_color thread to finish
+    thread.join()
+
 
 US_SENSOR_BACK = EV3ColorSensor(1)
 
-def get_distance():
+def get_distance_behind():
     distance = US_SENSOR_BACK.get_distance()
     return distance
 
 def return_to_origin():
     pass
 
-def first_fwd():
-    pass
+
 
 def second_fwd():
     pass
@@ -32,7 +67,10 @@ def second_fwd():
 # after second return_to_origin(), drop off poop!
 # stop sensors
 def nav_main():
+    first_fwd()
     pass
+
+
 
 
 
