@@ -7,7 +7,7 @@ motor_left = brick.Motor("C")
 motor_right = brick.Motor("B")
 
 # connect GyroSensor to port S1
-gyro = brick.EV3GyroSensor(2)
+gyro = brick.EV3GyroSensor(1)
 
 # waits until every previously defined sensor is ready
 brick.wait_ready_sensors()
@@ -32,6 +32,7 @@ def speed(speed1, speed2):
     motor_left.set_dps(speed1) # 90 deg/sec
     motor_right.set_dps(speed2) # 90 deg/sec
 
+
 def wheel_position(p1,p2,wait):
     wheel_circumference = 12.56637
     tick = wheel_circumference / 360
@@ -40,6 +41,7 @@ def wheel_position(p1,p2,wait):
     distance_p2 = p2 / tick
     motor_left.set_position_relative(distance_p1)
     motor_right.set_position_relative(distance_p2)
+
     # get motor speed here time.sleep(p1/motor_speed)
     time.sleep(wait)
     
@@ -108,17 +110,20 @@ def Turn(angle, speed):
 
         motor_right.set_position_relative(int(-angle * ORIENTTODEG))
         motor_left.set_position_relative(int(angle * ORIENTTODEG))
-        motor_right.wait_is_stopped(0.1) # Wait for the motor to stop and checks every 0.1s
+        motor_right.wait_is_stopped(0.01) # Wait for the motor to stop and checks every 0.1s
+        #motor_left.wait_is_stopped(0.01)
+        #time.sleep(0.1)
     except IOError as error:
         print(error)
-
+        
     
 def wheel_limits(p1,d1,p2,d2):
     motor_left.set_limits(power=p1, dps=d1)
     motor_right.set_limits(power=p2, dps=d2)
     
 def catch_poop():
-    wheel_position(10,10,3)
+    wheel_limits(100,180,100,180)
+    wheel_position(15,15,3)
 
 if __name__ == "__main__":
     # Prevents position control from going over either:
