@@ -1,6 +1,6 @@
 from subsystems.motor_settings import Turn, MoveDistFwd 
 from subsystems.color_sensor_start_stop import get_both_sensor_color
-from subsystems.obstacle_detection import detect_obstacles
+from subsystems.object_detection import detect_obstacles, a_gyro
 from subsystems.utils.brick import EV3ColorSensor, EV3UltrasonicSensor
 from subsystems.utils.brick import reset_brick
 import time
@@ -30,13 +30,24 @@ def first_fwd():
     # Boolean that becomes true whenever water or a block in the way is detected
     obstacle_detected = False
 
-    # Move forward 5 cm at a time
-    while not obstacle_detected:
-        MoveDistFwd(5, 200)
+    # Boolean that becomes true whenever a block is in the way
+    blockInTheWay = False
 
+    total_distance = 0
+
+    # Move forward 5 cm at a time
+    while not obstacle_detected and blockInTheWay == False:
+        MoveDistFwd(5, 200)
+        total_distance += 5
+
+        # Check if water was detected
         if stop_event.is_set():
             obstacle_detected = True
             break
+        
+        # Every 20cm, scan to see if there are blocks we can pick up
+        if total_distance % 20 == 0:
+            a_gyro()
 
         blockInTheWay = detect_obstacles()
 
