@@ -1,5 +1,4 @@
 from subsystems.utils import brick
-from subsystems.motor_arm_settings import stop_sensor_arm, rotate_sensor_arm, rotate_initial_position_arm, arm_limits
 import time
 
 # orientation
@@ -146,7 +145,6 @@ if __name__ == "__main__":
     #wheels_reset()
     #arms_reset()
     wheel_limits(100,180,100,180)
-    arm_limits(70,90,70,90)
     
     #wheel_position(-600,-600,4)
     rotate(90, 0.002)

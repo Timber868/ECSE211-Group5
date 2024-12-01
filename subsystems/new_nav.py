@@ -1,10 +1,67 @@
 from subsystems.motor_settings import Turn, MoveDistFwd 
 from subsystems.color_sensor_start_stop import get_both_sensor_color
-from subsystems.object_detection import detect_obstacles, a_gyro
+from subsystems.object_detection import detect_obstacles, a_gyro, move_and_catch
 from subsystems.utils.brick import EV3ColorSensor, EV3UltrasonicSensor
 from subsystems.utils.brick import reset_brick
 import time
 import threading
+
+US_SENSOR = EV3UltrasonicSensor(3)
+
+#Scan angle is how much we want to scan to it defaults to 90
+def scan(scan_angle=90):
+    #Needed to track how much we have scanned
+    total_angle = 0
+
+    #turns to true if we detect obstacles in our path
+    obstacle_in_the_way = False
+
+    while total_angle < scan_angle:
+        #Turn incrementally by 3 degrees
+        Turn(-3, 200)
+        total_angle += 3
+        time.sleep(0.1)
+        
+        #Get the us sensor distance
+        distance = US_SENSOR.get_value()
+        while distance == 0:
+            distance = US_SENSOR.get_value()
+
+        #If its further than 30cm away ignore it
+        if distance < 30:
+            MoveDistFwd(30, 200)
+            time.sleep(5)
+
+
+            #call mvoe and catch which scans to make sure its poop and catches it if it is
+            caught_poop = move_and_catch()
+
+            if caught_poop == True:
+                MoveDistFwd(-distance, 200)
+                time.sleep(5)
+
+            else:
+                #Move further back as we also moved forward to pick up the poop
+                MoveDistFwd(-distance - 15, 200)
+                time.sleep(5)
+
+                
+                #We know that a block thats not poo is in the way if its less than 10 degrees in front of us
+                if total_angle < 10:
+                    obstacle_in_the_way = True
+
+            #Turn an extra 5 degerees to avoid rescanning the same block
+            Turn(-5, 200)
+            time.sleep(0.1)
+
+            total_angle += 5
+
+    #Reorient yourself back to what you were facing before
+    Turn(total_angle, 200)
+    time.sleep(0.1)
+
+    #return wether or not there is something in the way. If there i we cant go forwards.
+    return obstacle_in_the_way
 
 
 stop_event = threading.Event()
@@ -47,9 +104,7 @@ def first_fwd():
         
         # Every 20cm, scan to see if there are blocks we can pick up
         if total_distance % 20 == 0:
-            a_gyro()
-
-        blockInTheWay = detect_obstacles()
+            blockInTheWay = scan()
 
     # Wait for the detect_color thread to finish
     thread.join()
