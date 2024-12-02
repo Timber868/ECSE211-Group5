@@ -62,12 +62,20 @@ def get_distance_behind():
     return distance
 
 def return_to_origin():
-    pass
+    distance_behind = get_distance_behind()
+
+    # Go back in increments of 2cm until we are 5cm away from the origin
+    while distance_behind > 5:
+        MoveDistFwd(-2, 200)
+        distance_behind = get_distance_behind()
+
+def turning_step():
+    Turn(-90, 200)    
 
 
 
 def second_fwd():
-    pass
+    first_fwd()
 
 # go fwd
 # scan for obstacles/blocks every 5 cm
@@ -79,6 +87,9 @@ def second_fwd():
 # stop sensors
 def nav_main():
     first_fwd()
+    return_to_origin()
+    turning_step()
+    second_fwd()
     pass
 
 
