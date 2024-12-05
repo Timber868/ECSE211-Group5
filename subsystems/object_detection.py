@@ -13,8 +13,6 @@ wait_ready_sensors(True) # Input True to see what the robot is trying to initial
 
 DETECTED_BLOCKS = []
 
-is_detecting = False
-
 detected = False
 detected_angle = 0
 detected_distance = 0
@@ -194,37 +192,56 @@ def a(angle,inital_angle):
     sweep_and_align(NEW_MIN, 20, 0.5)
     move_and_catch(NEW_MIN -1.5, MIN - 1.5)
     
-def a_gyro(angle,inital_angle):
-    global is_detecting
-    is_detecting = True
+def a_gyro(angle,inital_angle, stop_event):
     detected = True
-    distance_to_avoid = 0
-    
     MIN = detect_block_gyro(False, angle)
+
+    if stop_event.is_set():
+        print("Stop signal received. Exiting a_gyro.")
+        return
+
     sweep_and_align_gyro(MIN, inital_angle, 1)
     
-    is_detecting = False
-    wheel_limits(100,180,100,180)
-    wheel_position(MIN/2, MIN/2, 3)
+    move_distance(MIN/2, stop_event)
+
+    if stop_event.is_set():
+        print("Stop signal received. Exiting a_gyro.")
+        return
+
     Turn(15, 70)
     time.sleep(0.5)
-    
-    is_detecting = True
-    NEW_MIN = detect_block_gyro(False, 20)
-    sweep_and_align_gyro(NEW_MIN, 20, 1)
-#     time.sleep(3)
 
-    move_and_catch(NEW_MIN -1, MIN - 1)
+    NEW_MIN = detect_block_gyro(False, 20)
+
+    if stop_event.is_set():
+        print("Stop signal received. Exiting a_gyro.")
+        return
+
+    sweep_and_align_gyro(NEW_MIN, 20, 1)
+
+    if stop_event.is_set():
+        print("Stop signal received. Exiting a_gyro.")
+        return
+
+    move_and_catch(NEW_MIN - 1, MIN - 1, stop_event)
     detected = False
-def move_and_catch(distance, init_dist):
-    global is_detecting
-    is_detecting = False
+
+def move_distance(distance, stop_event):
+    wheel_limits(100, 180, 100, 180)
+    for i in range(1, distance/2):
+        if stop_event.is_set():
+            print("Stop signal received. Exiting a_gyro.")
+            return
+        wheel_position(i, i, 0.1)
+    
+    time.sleep(2)
+
+def move_and_catch(distance, init_dist, stop_event):
     wheel_limits(100,180,100,180)
-    wheel_position(distance, distance, 2)
+    move_distance(distance,stop_event)
     is_poop = False
     
     from subsystems.color_sensor_start_stop import get_block_color
-    is_detecting = True
 
     color_data = {"color": None}
     color_thread = threading.Thread(target = get_block_color, args=(color_data,))
@@ -251,16 +268,15 @@ def move_and_catch(distance, init_dist):
         print("avoid")
     
     rotate_initial_position_arm()
-    is_detecting = False
-    move_to_initial_position(init_dist, is_poop)
+    move_to_initial_position(init_dist, is_poop, stop_event)
 
     
-def move_to_initial_position(distance, is_poop):
+def move_to_initial_position(distance, is_poop, stop_event):
     wheel_limits(100,180,100,180)
     if is_poop:
-        wheel_position(-(distance + 15), -(distance + 15), 3)
+        move_distance(-(distance + 15), stop_event)
     else:
-        wheel_position(-distance,-distance,3)
+        move_distance(-distance,stop_event)
 
 def detect_obstacles():
     is_obstacle = False
